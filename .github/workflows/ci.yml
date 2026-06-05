@@ -7,7 +7,8 @@
 # 2 barreiras (defesa-em-profundidade sobre o fail-closed CLIENT-SIDE do learnings_public):
 #  (1) APPEND-ONLY: rejeita PR que MODIFICA/DELETA report existente (só ADIÇÃO permitida) — anti-tamper
 #      cross-pseudônimo: ninguém apaga/edita o report de outro.
-#  (2) ANTI-PII GENÉRICO (e-mail/CPF/CNPJ/string-longa-entre-aspas) nos arquivos ADICIONADOS.
+#  (2) ANTI-PII GENÉRICO (e-mail/CPF/CNPJ) nos arquivos ADICIONADOS. NÃO flag aspas-longas: o report
+#      é NARRATIVO (prosa anonimizada com citações legítimas) — aspas≠PII aqui (≠ tier estruturado).
 #  A `sensitive-denylist` PRIVADA NÃO entra aqui (publicá-la vazaria nomes — ADR-020/063); só PII genérico.
 #  Bash puro (sem heredoc — robusto no Actions).
 
@@ -44,7 +45,7 @@ jobs:
           FAIL=0
           for f in $FILES; do
             [ -f "$f" ] || continue
-            if grep -nEi '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}|\b[0-9]{3}\.?[0-9]{3}\.?[0-9]{3}-?[0-9]{2}\b|\b[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}/?[0-9]{4}-?[0-9]{2}\b|"[^"]{15,}"' "$f"; then
+            if grep -nEi '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}|\b[0-9]{3}\.?[0-9]{3}\.?[0-9]{3}-?[0-9]{2}\b|\b[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}/?[0-9]{4}-?[0-9]{2}\b' "$f"; then
               echo "REPROVADO: possivel PII/texto-livre em $f"
               FAIL=1
             fi
